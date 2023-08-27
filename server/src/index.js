@@ -1,6 +1,7 @@
 import express from "express";
 import "dotenv/config.js";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import methodOverride from "method-override";
 import cors from "cors";
 import morgan from "morgan";
@@ -24,6 +25,7 @@ app.use(
 app.use(cors());
 app.use(methodOverride());
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(morgan("dev"));
 
 createRoute(app);

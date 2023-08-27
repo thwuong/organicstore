@@ -15,10 +15,36 @@ const UserSchema = new Schema(
       type: String,
       required: [true, "User password required"],
     },
+    isComfirmed: {
+      type: Boolean,
+      default: false,
+    },
+    comfirmedOn: {
+      type: Date,
+    },
+    location: {
+      ward: {
+        type: String,
+      },
+      district: {
+        type: String,
+      },
+      province: {
+        type: String,
+      },
+    },
+    phone: {
+      type: String,
+    },
+    roles: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model("user", UserSchema);

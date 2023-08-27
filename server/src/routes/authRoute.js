@@ -1,11 +1,18 @@
 import { Router } from "express";
 const router = Router();
 
-import { login, getUser, register } from "../controllers/authController.js";
-import { verifyToken } from "../configs/passport.js";
+import {
+  login,
+  refreshToken,
+  register,
+  logout,
+} from "../controllers/authController.js";
+
+import { verifyRefreshToken } from "../configs/passport.js";
 
 router.post("/login", login);
 router.post("/register", register);
-router.get("/", verifyToken, getUser);
+router.get("/refreshtoken", verifyRefreshToken, refreshToken);
+router.post("/logout", logout);
 
 export default router;

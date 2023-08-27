@@ -1,7 +1,9 @@
-import { genarateToken } from "../configs/passport.js";
+import { generateTokens } from "../configs/passport.js";
 import { createError } from "../utils/handleError.js";
-import userModel from "../models/userModel.js";
 import { checkPassword, hashPassword } from "../utils/handlePassword.js";
+
+import userModel from "../models/userModel.js";
+
 export async function login(req, res, next) {
   let { email, password } = req.body;
 
@@ -18,9 +20,15 @@ export async function login(req, res, next) {
       return next(createError(400, "Password not match"));
     }
 
-    let token = genarateToken(user.email);
+    let { accessToken, refreshToken } = generateTokens(user.email);
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
     res.status(200).json({
-      token,
+      accessToken,
       message: "Login successfully",
     });
   } catch (error) {
@@ -50,9 +58,15 @@ export async function register(req, res, next) {
     });
 
     await user.save();
-    let token = genarateToken(user.email);
+    let { accessToken, refreshToken } = generateTokens(user.email);
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
     res.status(200).json({
-      token,
+      accessToken,
       message: "Register successfully",
     });
   } catch (error) {
@@ -60,9 +74,24 @@ export async function register(req, res, next) {
   }
 }
 
-export function getUser(req, res, next) {
-  res.status(200).json({
-    email: req.user,
-    message: "get successfully",
+export function refreshToken(req, res, next) {
+  try {
+    console.log(req.userEmail);
+
+    const { accessToken } = generateTokens(req.userEmail);
+
+    res.json({
+      accessToken,
+      message: "refresh token successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+export function logout(req, res, next) {
+  res.clearCookie("jwt");
+
+  res.json({
+    message: "Logouted successfully",
   });
 }
